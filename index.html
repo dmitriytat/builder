@@ -100,13 +100,16 @@ function Placeholder({ id }) {
   );
 }
 
-function Container({ children, title }) {
+function Container({ slotA, slotB, title }) {
    const {onDragStart} = useDrag(Container);
 
   return (
     <div draggable="true" onDragStart={onDragStart} style={{ padding: '20px', border: '1px solid red' }}>
       <h2>{title}</h2>
-      {children}
+      <div style={{ display: 'flex', gap: '10px' }}>
+      <div style={{ flexBasis: '50%' }}>{slotA}</div>
+      <div style={{ flexBasis: '50%' }}>{slotB}</div>
+        </div>
     </div>
   );
 }
@@ -116,8 +119,8 @@ function Container({ children, title }) {
 function Page() {
   return (
     <div style={{ padding: '20px', border: '1px solid green' }}>
-      <Container title={'Первый контейнер'} children={null} />
-      <Container title={'Второй контейнер'} children={null} />
+      <Container title={'Первый контейнер'} slotA={null} slotB={null} />
+      <Container title={'Второй контейнер'} slotA={null} slotB={null} />
     </div>
   );
 }
@@ -173,7 +176,8 @@ function Page() {
                     if (isReplace) {
                         let attrs = []
                         if (state.opts.component === 'Container') {
-                            attrs.push(t.jsxAttribute(t.jsxIdentifier('children'), t.JSXExpressionContainer(t.NullLiteral())))
+                            attrs.push(t.jsxAttribute(t.jsxIdentifier('slotA'), t.JSXExpressionContainer(t.NullLiteral())))
+                            attrs.push(t.jsxAttribute(t.jsxIdentifier('slotB'), t.JSXExpressionContainer(t.NullLiteral())))
                         }
 
                         const openingElement = t.jsxOpeningElement(t.jsxIdentifier(state.opts.component), attrs, true);
@@ -182,7 +186,7 @@ function Page() {
                     }
                 },
                 JSXAttribute(path) {
-                    if (path.node.name.name === "children" && path.node.value.expression.type === 'NullLiteral') {
+                    if (path.node.name.name.includes('slot') && path.node.value.expression.type === 'NullLiteral') {
                         const id = getPlaceholderId()
                         const openingElement = t.jsxOpeningElement(t.jsxIdentifier('Placeholder'), [
                             t.jsxAttribute(t.jsxIdentifier('id'), t.StringLiteral(id))
