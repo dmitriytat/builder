@@ -105,7 +105,7 @@ function Container({ slotA, slotB, title }) {
 
   return (
     <div draggable="true" onDragStart={onDragStart} style={{ padding: '20px', border: '1px solid red' }}>
-      <h2>{title}</h2>
+      {title && <h2>{title}</h2>}
       <div style={{ display: 'flex', gap: '10px' }}>
       <div style={{ flexBasis: '50%' }}>{slotA}</div>
       <div style={{ flexBasis: '50%' }}>{slotB}</div>
@@ -126,11 +126,17 @@ function Page() {
 }
 `;
 
-    let placeholderId = 1;
+    let preId = 0;
+    let placeholderId = 0;
 
     function getPlaceholderId() {
         placeholderId++;
-        return placeholderId.toString();
+        return preId.toString() + placeholderId.toString();
+    }
+
+    function resetPlaceholderId() {
+        preId++;
+        placeholderId = 0;
     }
 
     // Simple plugin that converts every identifier to "LOL"
@@ -191,8 +197,7 @@ function Page() {
                         const openingElement = t.jsxOpeningElement(t.jsxIdentifier('Placeholder'), [
                             t.jsxAttribute(t.jsxIdentifier('id'), t.StringLiteral(id))
                         ], true);
-                        const placeholder = t.jsxElement(openingElement, null, []);
-                        path.node.value.expression = placeholder;
+                        path.node.value.expression = t.jsxElement(openingElement, null, []);
                     }
                 }
             }
@@ -219,7 +224,7 @@ function Page() {
         }
 
         transformPage() {
-            placeholderId = 1;
+            resetPlaceholderId();
             var output = Babel.transform(this.pageCode, {
                 plugins: ["syntax-jsx", "builder"],
             });
@@ -252,8 +257,7 @@ function Page() {
         }
 
         renderCode() {
-            const transformedPage = this.transformPage();
-            document.querySelector('#code').textContent = transformedPage;
+            document.querySelector('#code').textContent = this.transformPage();
         }
     }
 
