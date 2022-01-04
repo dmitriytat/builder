@@ -16,12 +16,14 @@
 
     #page,
     #palette,
+    #old,
     #code {
         width: 50%;
         border: 1px solid grey;
         padding: 20px;
         box-sizing: border-box;
         white-space: pre;
+        overflow-x: auto;
     }
 </style>
 <body>
@@ -30,6 +32,7 @@
     <div id="page"></div>
     <div id="palette"></div>
     <div id="code"></div>
+    <div id="old"></div>
 </div>
 
 <script>
@@ -258,6 +261,7 @@ function Page() {
 
         renderCode() {
             document.querySelector('#code').textContent = this.transformPage();
+            document.querySelector('#old').textContent = code;
         }
     }
 
